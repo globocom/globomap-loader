@@ -26,8 +26,8 @@ from sqlalchemy import Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import ForeignKey
 
-from globomap_core_loader.api.database import Base
-from globomap_core_loader.api.database import Session
+from globomap_loader.database import Base
+from globomap_loader.database import Session
 
 logger = logging.getLogger(__name__)
 

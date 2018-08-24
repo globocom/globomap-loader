@@ -40,15 +40,9 @@ SCHEDULER_FREQUENCY_EXEC = os.getenv('SCHEDULER_FREQUENCY_EXEC')
 LOADER_UPDATE = 'globomap_loader_update'
 
 DRIVERS = [
-    {'package': 'globomap_core_loader.driver.generic',
+    {'package': 'globomap_loader_api.driver.generic',
         'class': 'GenericDriver', 'factor': int(os.getenv('FACTOR', 1))},
     {'package': 'globomap_driver_napi.driver', 'class': 'Napi', 'factor': 1},
-    {
-        'package': 'globomap_driver_acs.driver', 'class': 'Cloudstack',
-        'params': {
-            'env': 'CTA'
-        }, 'factor': 1
-    },
     {
         'package': 'globomap_driver_acs.driver', 'class': 'Cloudstack',
         'params': {
@@ -63,10 +57,6 @@ DRIVERS = [
     }
 ]
 
-SPECS = {
-    'updates': 'globomap_core_loader/api/specs/updates.json',
-    'auth': 'globomap_core_loader/api/specs/auth.json',
-}
 
 SENTRY_DSN = os.getenv('SENTRY_DSN')
 LOGGING = {
@@ -93,36 +83,6 @@ LOGGING = {
     },
     'loggers': {
         'globomap_loader_api': {
-            'handlers': ['default', 'sentry'],
-            'level': 'WARNING',
-            'propagate': True
-        },
-        'globomap_core_loader': {
-            'handlers': ['default', 'sentry'],
-            'level': 'WARNING',
-            'propagate': True
-        },
-        'globomap_driver_napi': {
-            'handlers': ['default', 'sentry'],
-            'level': 'WARNING',
-            'propagate': True
-        },
-        'globomap_driver_acs': {
-            'handlers': ['default', 'sentry'],
-            'level': 'WARNING',
-            'propagate': True
-        },
-        'globomap_auth_manager': {
-            'handlers': ['default', 'sentry'],
-            'level': 'WARNING',
-            'propagate': True
-        },
-        'globomap_api_client': {
-            'handlers': ['default', 'sentry'],
-            'level': 'WARNING',
-            'propagate': True
-        },
-        'globomap_loader_api_client': {
             'handlers': ['default', 'sentry'],
             'level': 'WARNING',
             'propagate': True

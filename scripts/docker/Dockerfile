@@ -26,4 +26,4 @@ ADD . /app
 
 WORKDIR /app
 RUN export LC_CTYPE=UTF-8
-RUN pip install -r scripts/docker/requirements/requirements_loader.txt
+RUN pip install -r requirements.txt

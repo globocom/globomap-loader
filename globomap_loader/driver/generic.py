@@ -15,16 +15,15 @@
 """
 import logging
 
+from globomap_loader_api.rabbitmq import RabbitMQClient
+from globomap_loader_api.settings import GLOBOMAP_RMQ_HOST
+from globomap_loader_api.settings import GLOBOMAP_RMQ_PASSWORD
+from globomap_loader_api.settings import GLOBOMAP_RMQ_PORT
+from globomap_loader_api.settings import GLOBOMAP_RMQ_QUEUE_NAME
+from globomap_loader_api.settings import GLOBOMAP_RMQ_USER
+from globomap_loader_api.settings import GLOBOMAP_RMQ_VIRTUAL_HOST
 from pika.exceptions import ChannelClosed
 from pika.exceptions import ConnectionClosed
-
-from globomap_core_loader.rabbitmq import RabbitMQClient
-from globomap_core_loader.settings import GLOBOMAP_RMQ_HOST
-from globomap_core_loader.settings import GLOBOMAP_RMQ_PASSWORD
-from globomap_core_loader.settings import GLOBOMAP_RMQ_PORT
-from globomap_core_loader.settings import GLOBOMAP_RMQ_QUEUE_NAME
-from globomap_core_loader.settings import GLOBOMAP_RMQ_USER
-from globomap_core_loader.settings import GLOBOMAP_RMQ_VIRTUAL_HOST
 
 
 logger = logging.getLogger(__name__)

@@ -1,70 +1,24 @@
 version: '3'
 services:
 
-    queue:
-        container_name: globomap_loader_queue
-        image: rabbitmq:3.6.9
-        ports:
-            - "${GMAP_QUEUE_PORT}:5672"
-            - "${GMAP_QUEUE_ADM_PORT}:15672"
-        command: sh -c "rabbitmq-plugins enable rabbitmq_management rabbitmq_shovel rabbitmq_shovel_management; rabbitmq-server"
-        volumes:
-            - ./scripts/docker/queue/rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro
-            - ./scripts/docker/queue/definitions.json:/etc/rabbitmq/definitions.json:ro
-        networks:
-            - globomap-api_globomap_net
-
-    db:
-        container_name: globomap_loader_db_mysql
-        image: mysql:5.7
-        ports:
-            - "${GMAP_DB_LOADER_PORT}:3306"
-        environment:
-            MYSQL_ALLOW_EMPTY_PASSWORD: 1
-            MYSQL_DATABASE: 'globomaploader'
-        volumes:
-            - globomap_loader_db_vol:/var/lib/mysql
-        networks:
-            - globomap-api_globomap_net
-
-    api-loader:
-        container_name: globomap_loader_api
-        build:
-            context: ./
-            dockerfile: scripts/docker/Dockerfile_api
-        ports:
-            - "${GMAP_LOADER_API_PORT}:5003"
-            - "${GMAP_LOADER_API_DEBUG_PORT}:5004"
-        env_file:
-            - ./scripts/docker/env/globomap-loader-api.env
-        volumes:
-            - .:/app
-        networks:
-            - globomap-api_globomap_net
-        command: make run_api
-        depends_on:
-            - db
-            - queue
-        external_links:
-            - queue:globomap_loader_queue
-
     loader:
         container_name: globomap_loader
         build:
             context: ./
             dockerfile: scripts/docker/Dockerfile_loader
         env_file:
-            - ./scripts/docker/env/globomap-loader.env
+            - ./scripts/docker/globomap.env
         volumes:
             - .:/app
         networks:
             - globomap-api_globomap_net
-        command: sh ./scripts/docker/loader/docker-start-loader.sh
+        command: sh ./scripts/docker/docker-start-loader.sh
         depends_on:
             - db
             - queue
         external_links:
             - globomap_api
+            - db:globomap_loader_db_mysql
             - queue:globomap_loader_queue
 
 networks:

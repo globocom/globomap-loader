@@ -18,9 +18,8 @@ import logging
 from globomap_api_client import auth
 from globomap_api_client import exceptions
 from globomap_api_client.document import Document
-
-from globomap_core_loader.settings import GLOBOMAP_API_PASSWORD
-from globomap_core_loader.settings import GLOBOMAP_API_USERNAME
+from globomap_loader_api.settings import GLOBOMAP_API_PASSWORD
+from globomap_loader_api.settings import GLOBOMAP_API_USERNAME
 
 
 logger = logging.getLogger(__name__)

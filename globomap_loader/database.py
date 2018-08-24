@@ -21,10 +21,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 
-from globomap_core_loader.settings import DATABASE_POOL_OVERFLOW
-from globomap_core_loader.settings import DATABASE_POOL_RECYCLE
-from globomap_core_loader.settings import DATABASE_POOL_SIZE
-from globomap_core_loader.settings import SQLALCHEMY_DATABASE_URI
+from globomap_loader.settings import DATABASE_POOL_OVERFLOW
+from globomap_loader.settings import DATABASE_POOL_RECYCLE
+from globomap_loader.settings import DATABASE_POOL_SIZE
+from globomap_loader.settings import SQLALCHEMY_DATABASE_URI
 
 if os.getenv('ENV') == 'test':
     engine = create_engine('sqlite+pysqlite:///file.db', module=sqlite)
@@ -43,7 +43,7 @@ Session = scoped_session(session_maker)
 
 
 def init_db():
-    import globomap_core_loader.api.job.models
+    import globomap_loader.job.models
     Base.metadata.create_all(bind=engine)
 
 
