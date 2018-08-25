@@ -1,4 +1,4 @@
-# Makefile for globomap-core-loader
+# Makefile for globomap-loader
 
 # Pip executable path
 PIP := $(shell which pip)
@@ -40,11 +40,11 @@ run_migrations: run_version_control ## Run migrations
 
 run_loader: run_migrations ## Run the loader
 	@echo "Running loader..."
-	@python3.6 scripts/run_loader.py $(module)
+	@python3.6 run_loader.py $(module)
 
 run_reset_loader: ## Run the reset loader app
 	@echo "Running reset loader..."
-	@python3.6 scripts/run_reset_loader.py
+	@python3.6 run_reset_loader.py
 
 containers_start:## Start containers
 	docker-compose up -d

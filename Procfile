@@ -8,3 +8,4 @@ worker7: python run_loader.py
 worker8: python run_loader.py
 worker9: python run_loader.py
 worker10: python run_loader.py
+reset: python scheduler_reset_loader.py

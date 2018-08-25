@@ -40,7 +40,7 @@ SCHEDULER_FREQUENCY_EXEC = os.getenv('SCHEDULER_FREQUENCY_EXEC')
 LOADER_UPDATE = 'globomap_loader_update'
 
 DRIVERS = [
-    {'package': 'globomap_loader_api.driver.generic',
+    {'package': 'globomap_loader.driver.generic',
         'class': 'GenericDriver', 'factor': int(os.getenv('FACTOR', 1))},
     {'package': 'globomap_driver_napi.driver', 'class': 'Napi', 'factor': 1},
     {
@@ -82,7 +82,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'globomap_loader_api': {
+        'globomap_loader': {
             'handlers': ['default', 'sentry'],
             'level': 'WARNING',
             'propagate': True

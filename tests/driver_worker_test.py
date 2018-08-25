@@ -15,14 +15,14 @@
 """
 import unittest
 
-from globomap_loader_api.database import destroy_db
-from globomap_loader_api.database import init_db
-from globomap_loader_api.job.models import Job
-from globomap_loader_api.loader.globomap import GloboMapException
-from globomap_loader_api.loader.loader import DriverWorker
 from mock import MagicMock
 from mock import Mock
 
+from globomap_loader.database import destroy_db
+from globomap_loader.database import init_db
+from globomap_loader.job.models import Job
+from globomap_loader.loader.globomap import GloboMapException
+from globomap_loader.loader.loader import DriverWorker
 from tests.util import open_json
 
 

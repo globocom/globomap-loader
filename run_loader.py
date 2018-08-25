@@ -17,8 +17,8 @@
 import sys
 from logging import config
 
-from globomap_loader_api.loader.loader import CoreLoader
-from globomap_loader_api.settings import LOGGING
+from globomap_loader.loader.loader import CoreLoader
+from globomap_loader.settings import LOGGING
 
 if __name__ == '__main__':
 

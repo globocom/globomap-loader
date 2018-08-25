@@ -19,22 +19,23 @@ import logging
 import time
 from multiprocessing import Process
 
-from globomap_loader_api.database import Session
-from globomap_loader_api.job.models import Job
-from globomap_loader_api.job.models import JobError
-from globomap_loader_api.loader.globomap import GloboMapClient
-from globomap_loader_api.loader.globomap import GloboMapException
-from globomap_loader_api.rabbitmq import RabbitMQClient
-from globomap_loader_api.settings import DRIVER_FETCH_INTERVAL
-from globomap_loader_api.settings import DRIVERS
-from globomap_loader_api.settings import GLOBOMAP_API_URL
-from globomap_loader_api.settings import GLOBOMAP_RMQ_ERROR_EXCHANGE
-from globomap_loader_api.settings import GLOBOMAP_RMQ_HOST
-from globomap_loader_api.settings import GLOBOMAP_RMQ_PASSWORD
-from globomap_loader_api.settings import GLOBOMAP_RMQ_PORT
-from globomap_loader_api.settings import GLOBOMAP_RMQ_USER
-from globomap_loader_api.settings import GLOBOMAP_RMQ_VIRTUAL_HOST
 from pika.exceptions import ConnectionClosed
+
+from globomap_loader.database import Session
+from globomap_loader.job.models import Job
+from globomap_loader.job.models import JobError
+from globomap_loader.loader.globomap import GloboMapClient
+from globomap_loader.loader.globomap import GloboMapException
+from globomap_loader.rabbitmq import RabbitMQClient
+from globomap_loader.settings import DRIVER_FETCH_INTERVAL
+from globomap_loader.settings import DRIVERS
+from globomap_loader.settings import GLOBOMAP_API_URL
+from globomap_loader.settings import GLOBOMAP_RMQ_ERROR_EXCHANGE
+from globomap_loader.settings import GLOBOMAP_RMQ_HOST
+from globomap_loader.settings import GLOBOMAP_RMQ_PASSWORD
+from globomap_loader.settings import GLOBOMAP_RMQ_PORT
+from globomap_loader.settings import GLOBOMAP_RMQ_USER
+from globomap_loader.settings import GLOBOMAP_RMQ_VIRTUAL_HOST
 
 
 logger = logging.getLogger(__name__)
