@@ -5,7 +5,7 @@ services:
         container_name: globomap_loader
         build:
             context: ./
-            dockerfile: scripts/docker/Dockerfile_loader
+            dockerfile: scripts/docker/Dockerfile
         env_file:
             - ./scripts/docker/globomap.env
         volumes:
@@ -13,9 +13,6 @@ services:
         networks:
             - globomap-api_globomap_net
         command: sh ./scripts/docker/docker-start-loader.sh
-        depends_on:
-            - db
-            - queue
         external_links:
             - globomap_api
             - db:globomap_loader_db_mysql
@@ -24,6 +21,3 @@ services:
 networks:
     globomap-api_globomap_net:
         external: true
-
-volumes:
-    globomap_loader_db_vol:
