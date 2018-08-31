@@ -17,10 +17,22 @@
 import sys
 from logging import config
 
+from apscheduler.schedulers.blocking import BlockingScheduler
+from globomap_monitoring import zbx_passive
+
 from globomap_loader.loader.loader import CoreLoader
 from globomap_loader.settings import LOGGING
 
+sched = BlockingScheduler()
+
+
+@sched.scheduled_job('interval', seconds=60)
+def job_monitoracao_zabbix():
+    zbx_passive.send()
+
+
 if __name__ == '__main__':
+    sched.start()
 
     config.dictConfig(LOGGING)
 
