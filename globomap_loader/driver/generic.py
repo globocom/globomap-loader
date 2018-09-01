@@ -15,11 +15,10 @@
 """
 import logging
 
-from pika.exceptions import ChannelClosed
-from pika.exceptions import ConnectionClosed
-
-from globomap_loader.rabbitmq import RabbitMQClient
+from globomap_loader.driver.consumer import RabbitMQClient
+from globomap_loader.settings import GLOBOMAP_RMQ_EXCHANGE
 from globomap_loader.settings import GLOBOMAP_RMQ_HOST
+from globomap_loader.settings import GLOBOMAP_RMQ_KEY
 from globomap_loader.settings import GLOBOMAP_RMQ_PASSWORD
 from globomap_loader.settings import GLOBOMAP_RMQ_PORT
 from globomap_loader.settings import GLOBOMAP_RMQ_QUEUE_NAME
@@ -47,23 +46,12 @@ class GenericDriver(object):
         there's no message left in the target queue. Only acks message if
         processed successfully by the callback.
         """
-        while True:
-            delivery_tag = None
-            try:
-                message, delivery_tag = self.rabbitmq.get_message(
-                    GLOBOMAP_RMQ_QUEUE_NAME
-                )
-                if message:
-                    callback(message)
-                    self.rabbitmq.ack_message(delivery_tag)
-                else:
-                    return
-            except (ConnectionClosed, ChannelClosed):
-                logger.exception(
-                    'Error connecting to RabbitMQ, reconnecting')
-                self._connect_rabbitmq()
 
-            except Exception:
-                logger.exception('Error connecting to RabbitMQ')
-                self.rabbitmq.nack_message(delivery_tag)
-                raise
+        self.rabbitmq.set_settings(
+            GLOBOMAP_RMQ_EXCHANGE, GLOBOMAP_RMQ_QUEUE_NAME, GLOBOMAP_RMQ_KEY, callback
+        )
+
+        try:
+            self.rabbitmq.run()
+        except Exception:
+            self.rabbitmq.stop()

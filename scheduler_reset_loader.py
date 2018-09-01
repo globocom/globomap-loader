@@ -22,6 +22,7 @@ from globomap_monitoring import zbx_passive
 from globomap_loader.loader.loader import CoreLoader
 from globomap_loader.settings import LOGGING
 from globomap_loader.settings import SCHEDULER_FREQUENCY_EXEC
+from globomap_loader.settings import ZBX_PASSIVE_MONITOR_SCHEDULER
 
 sched = BlockingScheduler()
 
@@ -34,7 +35,7 @@ def run_loader():
 
 @sched.scheduled_job('interval', seconds=60)
 def job_monitoracao_zabbix():
-    zbx_passive.send()
+    zbx_passive.send(ZBX_PASSIVE_MONITOR_SCHEDULER)
 
 
 if __name__ == '__main__':

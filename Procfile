@@ -1,11 +1,4 @@
-worker1: python run_loader.py
-worker2: python run_loader.py
-worker3: python run_loader.py
-worker4: python run_loader.py
-worker5: python run_loader.py
-worker6: python run_loader.py
-worker7: python run_loader.py
-worker8: python run_loader.py
-worker9: python run_loader.py
-worker10: python run_loader.py
+worker_genericdriver: python run_loader.py GenericDriver
+worker_napi: python run_loader.py Napi
+worker_cloudstack: python run_loader.py Cloudstack
 reset: python scheduler_reset_loader.py

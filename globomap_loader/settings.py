@@ -39,6 +39,9 @@ SCHEDULER_FREQUENCY_EXEC = os.getenv('SCHEDULER_FREQUENCY_EXEC')
 
 LOADER_UPDATE = 'globomap_loader_update'
 
+ZBX_PASSIVE_MONITOR_LOADER = os.getenv('ZBX_PASSIVE_MONITOR_LOADER')
+ZBX_PASSIVE_MONITOR_SCHEDULER = os.getenv('ZBX_PASSIVE_MONITOR_SCHEDULER')
+
 DRIVERS = [
     {'package': 'globomap_loader.driver.generic',
         'class': 'GenericDriver', 'factor': int(os.getenv('FACTOR', 1))},
@@ -57,8 +60,8 @@ DRIVERS = [
     }
 ]
 
-
 SENTRY_DSN = os.getenv('SENTRY_DSN')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
