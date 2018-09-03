@@ -73,7 +73,7 @@ LOGGING = {
     },
     'handlers': {
         'default': {
-            'level': 'WARNING',
+            'level': 'ERROR',
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout',
             'formatter': 'verbose',

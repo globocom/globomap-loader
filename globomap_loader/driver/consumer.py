@@ -227,7 +227,11 @@ class RabbitMQClient(object):
 
         document = json.loads(body)
         self.callback(document)
-        self.acknowledge_message(method.delivery_tag)
+        try:
+            self.acknowledge_message(method.delivery_tag)
+        except Exception:
+            LOGGER.exception('Cannot made ack in message. Process was stopped')
+            self.stop()
 
     def on_cancelok(self, unused_frame):
         """This method is invoked by pika when RabbitMQ acknowledges the

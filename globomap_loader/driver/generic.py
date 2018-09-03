@@ -48,7 +48,8 @@ class GenericDriver(object):
         """
 
         self.rabbitmq.set_settings(
-            GLOBOMAP_RMQ_EXCHANGE, GLOBOMAP_RMQ_QUEUE_NAME, GLOBOMAP_RMQ_KEY, callback
+            GLOBOMAP_RMQ_EXCHANGE, GLOBOMAP_RMQ_QUEUE_NAME, [
+                GLOBOMAP_RMQ_KEY], callback
         )
 
         try:
