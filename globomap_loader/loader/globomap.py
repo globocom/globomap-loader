@@ -14,13 +14,16 @@
    limitations under the License.
 """
 import logging
+import time
 
 from globomap_api_client import auth
 from globomap_api_client import exceptions
 from globomap_api_client.document import Document
+from globomap_api_client.query import Query
 
 from globomap_loader.settings import GLOBOMAP_API_PASSWORD
 from globomap_loader.settings import GLOBOMAP_API_USERNAME
+from globomap_loader.settings import RETRIES
 
 
 logger = logging.getLogger(__name__)
@@ -40,8 +43,9 @@ class GloboMapClient(object):
             password=GLOBOMAP_API_PASSWORD
         )
         self.doc = Document(auth=self.auth)
+        self.query = Query(auth=self.auth)
 
-    def update_element_state(self, action, type, collection, element, key, retries=0):
+    def update_element_state(self, action, type, collection, element, key, retries=RETRIES):
 
         try:
             if action.upper() == 'CREATE':
@@ -70,6 +74,7 @@ class GloboMapClient(object):
                 )
                 retries += 1
                 self.generate_auth()
+                time.sleep(5 + (retries * 5))
                 self.update_element_state(
                     action, type, collection, element, key, retries)
             else:
@@ -88,12 +93,14 @@ class GloboMapClient(object):
 
         except exceptions.ApiError as err:
 
-            if err.status_code in (502, 503, 504) and retries < 3:
+            # Any error 5xx
+            if str(err.status_code)[0] == '5' and retries < 3:
                 logger.warning(
                     'Retry send element %s %s %s %s %s',
                     action, type, collection, element, key
                 )
                 retries += 1
+                time.sleep(5 + (retries * 5))
                 self.update_element_state(
                     action, type, collection, element, key, retries)
             else:
@@ -136,6 +143,9 @@ class GloboMapClient(object):
 
     def clear(self, type, collection, payload):
         return self.doc.clear(type, collection, payload)
+
+    def run_query(self, query_id, variable):
+        return self.query.execute(query_id, variable)
 
 
 class GloboMapException(Exception):
