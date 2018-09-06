@@ -45,7 +45,7 @@ class GloboMapClient(object):
         self.doc = Document(auth=self.auth)
         self.query = Query(auth=self.auth)
 
-    def update_element_state(self, action, type, collection, element, key, retries=RETRIES):
+    def update_element_state(self, action, type, collection, element, key, retries=0):
 
         try:
             if action.upper() == 'CREATE':
@@ -67,7 +67,7 @@ class GloboMapClient(object):
             raise GloboMapException(err.message, err.status_code)
 
         except exceptions.Unauthorized as err:
-            if retries < 3:
+            if retries < RETRIES:
                 logger.warning(
                     'Retry action %s %s %s %s %s',
                     action, type, collection, element, key
@@ -92,9 +92,8 @@ class GloboMapClient(object):
             raise GloboMapException(err.message, err.status_code)
 
         except exceptions.ApiError as err:
-
             # Any error 5xx
-            if str(err.status_code)[0] == '5' and retries < 3:
+            if str(err.status_code)[0] == '5' and retries < RETRIES:
                 logger.warning(
                     'Retry send element %s %s %s %s %s',
                     action, type, collection, element, key
