@@ -60,11 +60,18 @@ class GloboMapClient(object):
                 return self.clear(type, collection, element)
 
         except exceptions.ValidationError as err:
-            logger.error(
-                'Bad request in send element %s %s %s %s %s',
-                action, type, collection, element.encode('ascii'), key
-            )
-            raise GloboMapException(err.message, err.status_code)
+            try:
+                element = element.encode('ascii')
+            except Exception:
+                logger.error(
+                    'Message cannot be encoded: %s', element)
+                pass
+            else:
+                logger.error(
+                    'Bad request in send element %s %s %s %s %s',
+                    action, type, collection, element, key
+                )
+                raise GloboMapException(err.message, err.status_code)
 
         except exceptions.Unauthorized as err:
             if retries < RETRIES:
