@@ -1,5 +1,5 @@
 APScheduler==3.5.1
-globomap-api-client==1.0.5
+globomap-api-client==1.0.6
 globomap-driver-acs==0.0.43
 globomap-driver-napi==0.0.30
 globomap-loader-api-client==0.0.7

@@ -22,7 +22,7 @@ def run_queries():
     globomap_client = GloboMapClient(GLOBOMAP_API_URL)
     for qr in QUERIES.split(','):
         if qr:
-            qr = qr.split(',')
+            qr = qr.split(';')
             variable = qr[1] if len(qr) > 1 else ''
             query = qr[0]
             globomap_client.run_query(query, variable)
