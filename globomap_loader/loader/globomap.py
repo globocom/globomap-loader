@@ -99,8 +99,7 @@ class GloboMapClient(object):
             raise GloboMapException(err.message, err.status_code)
 
         except exceptions.ApiError as err:
-            # Any error 5xx
-            if str(err.status_code)[0] == '5' and retries < RETRIES:
+            if retries < RETRIES:
                 logger.warning(
                     'Retry send element %s %s %s %s %s',
                     action, type, collection, element, key
