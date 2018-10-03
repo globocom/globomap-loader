@@ -21,9 +21,6 @@ from multiprocessing import Process
 
 from pika.exceptions import ConnectionClosed
 
-from globomap_loader.database import Session
-from globomap_loader.job.models import Job
-from globomap_loader.job.models import JobError
 from globomap_loader.loader.globomap import GloboMapClient
 from globomap_loader.loader.globomap import GloboMapException
 from globomap_loader.rabbitmq import RabbitMQClient
@@ -86,8 +83,6 @@ class CoreLoader(object):
                     logger.exception(
                         'Unknown error loading driver %s', driver_config
                     )
-                finally:
-                    Session.remove()
 
         return drivers
 
@@ -116,7 +111,6 @@ class DriverWorker(Process):
 
     def __init__(self, globomap_client, driver, exception_handler):
         Process.__init__(self)
-        self.session = Session()
         self.name = driver.__class__.__name__
         self.globomap_client = globomap_client
         self.driver = driver
@@ -133,14 +127,10 @@ class DriverWorker(Process):
             finally:
                 logger.debug('No more updates found')
                 logger.debug('Sleeping for %ss' % DRIVER_FETCH_INTERVAL)
-                Session.remove()
                 time.sleep(DRIVER_FETCH_INTERVAL)
 
     def _process_update(self, update):
         try:
-            if update.get('jobid'):
-                logger.info(
-                    'Processing update from JOB %s', update.get('jobid'))
             self.globomap_client.update_element_state(
                 update['action'],
                 update['type'],
@@ -148,52 +138,25 @@ class DriverWorker(Process):
                 update.get('element'),
                 update.get('key'),
             )
-            self.update_job_success(update.get('jobid'))
-        except GloboMapException as e:
-            if type(e.message) == bytes:
-                error_msg = e.message.decode('utf-8')
+        except GloboMapException as err:
+            if type(err.message) == bytes:
+                error_msg = err.message.decode('utf-8')
             else:
-                error_msg = e.message
+                error_msg = err.message
 
             logger.error('Could not process update: %s', update)
-            logger.debug('Status code: %s', e.status_code)
-            logger.debug('Response body: %s', e.message)
+            logger.debug('Status code: %s', err.status_code)
+            logger.debug('Response body: %s', err.message)
 
             try:
-                self.update_job_error(update.get('jobid'), update, e)
-                update['status'] = e.status_code
+                update['status'] = err.status_code
                 update['error_msg'] = error_msg
                 name = update.get('driver_name', self.name)
 
                 self.exception_handler.handle_exception(name, update)
-            except:
+            except Exception as err:
                 logger.exception('Fail to handle update error')
-                self.session.rollback()
-                raise
-            finally:
-                Session.remove()
-
-    def update_job_success(self, job_id):
-        if job_id:
-            job = Job.find_by_uuid(job_id, for_update=True)
-            if job:
-                job.increment_success_count()
-                job.save()
-            else:
-                logger.error('Job with id %s not found', job_id)
-
-    def update_job_error(self, job_id, update, err):
-
-        if job_id:
-            job = Job.find_by_uuid(job_id, for_update=True)
-            if job:
-                err = JobError(
-                    json.dumps(update), err.message, err.status_code
-                )
-                job.add_error(err)
-                job.save()
-            else:
-                logger.error('Job with id %s not found', job_id)
+                raise Exception(str(err))
 
 
 class DriverFullLoadWorker(Process):

@@ -3,12 +3,17 @@
 # Pip executable path
 PIP := $(shell which pip)
 
+PROJECT_HOME = "`pwd`"
+
 help:
 	@echo
 	@echo "Please use 'make <target>' where <target> is one of"
 	@echo
 
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+setup: ## Install project dependencies
+	@pip install -r $(PROJECT_HOME)/requirements_test.txt
 
 clean: ## Clear *.pyc files, etc
 	@echo "Cleaning project ..."
@@ -17,28 +22,20 @@ clean: ## Clear *.pyc files, etc
 
 compile: clean ## Compile source code
 	@echo "Compiling source code..."
-	@python3.6 -tt -m compileall globomap_loader_api
-	@pycodestyle --format=pylint --statistics globomap_loader_api
+	@python3.6 -tt -m compileall globomap_loader
+	@pycodestyle --format=pylint --statistics globomap_loader
 
 tests: clean ## Run tests
 	@echo "Running tests..."
 	@export ENV=test
-	@nosetests --verbose --rednose  --nocapture --cover-package=globomap_loader_api --with-coverage
+	@nosetests --verbose --rednose  --nocapture --cover-package=globomap_loader --with-coverage
 
 tests_ci: clean ## Make tests to CI
 	@echo "Running tests..."
 	@export ENV=test
-	@nosetests --verbose --rednose  --nocapture --cover-package=globomap_loader_api
+	@nosetests --verbose --rednose  --nocapture --cover-package=globomap_loader
 
-run_version_control: ## Run version control
-	@echo "Running version control..."
-	@python3.6 migrations/manage.py version_control || true
-
-run_migrations: run_version_control ## Run migrations
-	@echo "Running migrations..."
-	@python3.6 migrations/manage.py upgrade
-
-run_loader: run_migrations ## Run the loader
+run:  ## Run the loader
 	@echo "Running loader..."
 	@python3.6 run_loader.py $(module)
 

@@ -18,23 +18,12 @@ import unittest
 from mock import MagicMock
 from mock import Mock
 
-from globomap_loader.database import destroy_db
-from globomap_loader.database import init_db
-from globomap_loader.job.models import Job
 from globomap_loader.loader.globomap import GloboMapException
 from globomap_loader.loader.loader import DriverWorker
 from tests.util import open_json
 
 
 class TestDriverWorker(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        init_db()
-
-    @classmethod
-    def tearDownClass(self):
-        destroy_db()
 
     def test_sync_updates(self):
         update = open_json('tests/json/driver/driver_output_create.json')
@@ -63,26 +52,6 @@ class TestDriverWorker(unittest.TestCase):
             'Mock', update)
         self.assertEqual(400, update['status'])
         self.assertEqual({'errors': 'error msg'}, update['error_msg'])
-
-    def test_update_job_error(self):
-        job = Job('driver', 1).save()
-        worker = DriverWorker(None, None, None)
-        response_mock = Mock()
-        response_mock.message = '{"message": "error"}'
-        response_mock.status_code = 400
-        worker.update_job_error(job.uuid, {}, response_mock)
-
-        job = Job.find_by_uuid(job.uuid)
-        self.assertTrue(job.completed)
-        self.assertEquals(1, job.error_count)
-
-    def test_update_job_success(self):
-        job = Job('driver', 1).save()
-        worker = DriverWorker(None, None, None)
-        worker.update_job_success(job.uuid)
-
-        job = Job.find_by_uuid(job.uuid)
-        self.assertTrue(job.completed)
 
     def _mock_driver(self, return_value):
         driver_mock = Mock()
