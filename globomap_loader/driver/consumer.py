@@ -222,16 +222,22 @@ class RabbitMQClient(object):
         :param pika.Spec.BasicProperties: properties
         :param str|unicode body: The message body
         """
-        LOGGER.info('Received message # %s from %s: %s',
-                    method.delivery_tag, properties.app_id, body)
-
         document = json.loads(body)
-        self.callback(document)
+        request_id = properties.headers.get(
+            'X-REQUEST-ID') if properties.headers else ''
+        LOGGER.info('Received message #%s, X-REQUEST-ID:%s, %s',
+                    method.delivery_tag, request_id, document)
+
+        self.callback(document, headers=properties.headers)
+
         try:
             self.acknowledge_message(method.delivery_tag)
         except Exception:
             LOGGER.exception('Cannot made ack in message. Process was stopped')
             self.stop()
+        else:
+            LOGGER.info('Acked message #%s, X-REQUEST-ID:%s',
+                        method.delivery_tag, request_id)
 
     def on_cancelok(self, unused_frame):
         """This method is invoked by pika when RabbitMQ acknowledges the

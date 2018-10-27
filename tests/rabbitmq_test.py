@@ -27,14 +27,14 @@ class TestRabbitMQClient(unittest.TestCase):
         patch.stopall()
 
     def test_get_message(self):
-        pika_mock = self._mock_pika(
+        _, channel_mock = self._mock_pika(
             '{"action": "CREATE", "type": "vip", "element": {}}')
         rabbitmq = RabbitMQClient('localhost', 5672, 'user', 'password', '/')
 
         message = rabbitmq.get_message('queue_name')
 
         self.assertIsNotNone(message)
-        pika_mock.basic_get.assert_called_once_with('queue_name')
+        channel_mock.basic_get.assert_called_once_with('queue_name')
 
     def test_expected_exception(self):
         self._mock_pika(None)
@@ -46,22 +46,28 @@ class TestRabbitMQClient(unittest.TestCase):
             self.assertEqual('Queue name must be informed', e.message)
 
     def test_post_message(self):
-        pika_mock = self._mock_pika(None)
+        pika_mock, channel_mock = self._mock_pika(None)
         rabbitmq = RabbitMQClient('localhost', 5672, 'user', 'password', '/')
-        rabbitmq.post_message('exchange', 'key', 'message')
+        rabbitmq.post_message('exchange', 'key', 'message', {'x-header': 123})
 
-        pika_mock.basic_publish.assert_called_once_with(
+        channel_mock.basic_publish.assert_called_once_with(
             body='message', exchange='exchange',
             routing_key='key',
+            properties=pika_mock.BasicProperties(),
             mandatory=True
         )
+        pika_mock.BasicProperties.assert_any_call(
+            delivery_mode=2, headers={'x-header': 123})
 
     def _mock_pika(self, message):
         pika_mock = patch('globomap_loader.rabbitmq.pika').start()
         pika_mock.ConnectionParameters.return_value = MagicMock()
+
         connection_mock = MagicMock()
         channel_mock = MagicMock()
+        channel_mock.basic_get.return_value = (MagicMock(), None, message)
+
         connection_mock.channel.return_value = channel_mock
         pika_mock.BlockingConnection.return_value = connection_mock
-        channel_mock.basic_get.return_value = (MagicMock(), None, message)
-        return channel_mock
+
+        return pika_mock, channel_mock

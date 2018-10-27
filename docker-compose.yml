@@ -15,7 +15,7 @@ services:
         command: sh ./scripts/docker/docker-start-loader.sh
         external_links:
             - globomap_api
-            - queue:globomap_loader_queue
+            - globomap_loader_queue
 
 networks:
     globomap-api_globomap_net:

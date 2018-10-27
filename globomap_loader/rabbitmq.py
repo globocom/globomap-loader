@@ -43,11 +43,16 @@ class RabbitMQClient(object):
     def nack_message(self, delivery_tag):
         self.channel.basic_nack(delivery_tag)
 
-    def post_message(self, exchange_name, key, message, confirm=True):
+    def post_message(self, exchange_name, key, message, headers, confirm=True):
+
         published = self.channel.basic_publish(
             exchange=exchange_name,
             routing_key=key,
             body=message,
+            properties=pika.BasicProperties(
+                delivery_mode=2,
+                headers=headers
+            ),
             mandatory=True
         )
         if published and confirm:

@@ -129,7 +129,7 @@ class DriverWorker(Process):
                 logger.debug('Sleeping for %ss' % DRIVER_FETCH_INTERVAL)
                 time.sleep(DRIVER_FETCH_INTERVAL)
 
-    def _process_update(self, update):
+    def _process_update(self, update, **kwargs):
         try:
             self.globomap_client.update_element_state(
                 update['action'],
@@ -153,7 +153,8 @@ class DriverWorker(Process):
                 update['error_msg'] = error_msg
                 name = update.get('driver_name', self.name)
 
-                self.exception_handler.handle_exception(name, update)
+                self.exception_handler.handle_exception(
+                    name, update, **kwargs)
             except Exception as err:
                 logger.exception('Fail to handle update error')
                 raise Exception(str(err))
@@ -196,7 +197,7 @@ class UpdateExceptionHandler(object):
             GLOBOMAP_RMQ_PASSWORD, GLOBOMAP_RMQ_VIRTUAL_HOST
         )
 
-    def handle_exception(self, driver_name, update, retry=True):
+    def handle_exception(self, driver_name, update, retry=True, **kwargs):
         try:
             logger.debug('Sending failing update to rabbitmq error queue')
             collection = update.get('collection')
@@ -204,12 +205,14 @@ class UpdateExceptionHandler(object):
             self.rabbit_mq.post_message(
                 GLOBOMAP_RMQ_ERROR_EXCHANGE,
                 key,
-                json.dumps(update)
+                json.dumps(update),
+                kwargs.get('headers')
             )
+            logger.error(kwargs)
         except ConnectionClosed:
             if retry:
                 logger.warning('RabbitMQ Connection closed, reconnecting')
                 self._connect_rabbit()
-                self.handle_exception(driver_name, update, False)
+                self.handle_exception(driver_name, update, False, **kwargs)
         except Exception as err:
             logger.exception('Unable to handle exception %s', err)
