@@ -13,7 +13,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-import importlib
 import json
 import logging
 import time
@@ -21,11 +20,12 @@ from multiprocessing import Process
 
 from pika.exceptions import ConnectionClosed
 
+from globomap_loader.driver.generic import GenericDriver
 from globomap_loader.loader.globomap import GloboMapClient
 from globomap_loader.loader.globomap import GloboMapException
 from globomap_loader.rabbitmq import RabbitMQClient
 from globomap_loader.settings import DRIVER_FETCH_INTERVAL
-from globomap_loader.settings import DRIVERS
+from globomap_loader.settings import FACTOR
 from globomap_loader.settings import GLOBOMAP_API_URL
 from globomap_loader.settings import GLOBOMAP_RMQ_ERROR_EXCHANGE
 from globomap_loader.settings import GLOBOMAP_RMQ_HOST
@@ -34,7 +34,6 @@ from globomap_loader.settings import GLOBOMAP_RMQ_PORT
 from globomap_loader.settings import GLOBOMAP_RMQ_USER
 from globomap_loader.settings import GLOBOMAP_RMQ_VIRTUAL_HOST
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -42,64 +41,16 @@ class CoreLoader(object):
 
     def __init__(self, driver_name=None):
         logger.info('Starting Globmap loader')
-        self.drivers = self._load_drivers(driver_name)
         self.globomap_client = GloboMapClient(GLOBOMAP_API_URL)
 
     def load(self):
-        for driver in self.drivers:
+        instances = []
+        for _ in range(0, FACTOR):
             p = DriverWorker(
-                self.globomap_client, driver, UpdateExceptionHandler()
+                self.globomap_client, GenericDriver(), UpdateExceptionHandler()
             )
+            instances.append(p)
             p.start()
-
-    def full_load(self):
-        for driver in self.drivers:
-            DriverFullLoadWorker(driver).start()
-
-    def _load_drivers(self, driver_name=None):
-        logger.info('Loading drivers: %s', DRIVERS)
-        drivers = []
-        for driver_config in DRIVERS:
-            package = driver_config['package']
-            driver_class = driver_config['class']
-
-            if driver_name and driver_name != driver_class:
-                continue
-
-            factor = driver_config.get('factor') or 1
-            for _ in range(0, factor):
-
-                try:
-                    driver_instance = self._create_driver_instance(
-                        driver_class, package, driver_config.get('params')
-                    )
-                    drivers.append(driver_instance)
-                    logger.info('Driver "%s" loaded', driver_class)
-                except AttributeError:
-                    logger.exception('Cannot load driver %s', driver_class)
-                except ImportError:
-                    logger.exception('Cannot load driver %s', driver_class)
-                except Exception:
-                    logger.exception(
-                        'Unknown error loading driver %s', driver_config
-                    )
-
-        return drivers
-
-    def _create_driver_instance(self, driver_class, package, params):
-        driver_type = getattr(importlib.import_module(package), driver_class)
-        has_update_method = hasattr(driver_type, 'process_updates') and \
-            callable(getattr(driver_type, 'process_updates'))
-
-        if not has_update_method:
-            raise AttributeError(
-                "Driver '%s' doesnt implement 'process_updates'" % driver_class
-            )
-
-        if params:
-            return driver_type(params)
-        else:
-            return driver_type()
 
 
 class DriverWorker(Process):

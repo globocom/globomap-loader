@@ -13,8 +13,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-# !/usr/bin/env python
-import sys
 from logging import config
 
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -22,24 +20,19 @@ from globomap_monitoring import zbx_passive
 
 from globomap_loader.loader.loader import CoreLoader
 from globomap_loader.settings import LOGGING
-from globomap_loader.settings import SCHEDULER_FREQUENCY_EXEC
-from globomap_loader.settings import ZBX_PASSIVE_MONITOR_SCHEDULER
+from globomap_loader.settings import ZBX_PASSIVE_MONITOR_LOADER
 
 sched = BlockingScheduler()
 
 
-@sched.scheduled_job('cron', day_of_week='0-6', hour=SCHEDULER_FREQUENCY_EXEC)
-def run_loader():
-    config.dictConfig(LOGGING)
-
-    driver_class_name = sys.argv[1] if len(sys.argv) > 1 else None
-    CoreLoader(driver_class_name).full_load()
-
-
 @sched.scheduled_job('interval', seconds=60)
 def job_monitoracao_zabbix():
-    zbx_passive.send(ZBX_PASSIVE_MONITOR_SCHEDULER)
+    zbx_passive.send(ZBX_PASSIVE_MONITOR_LOADER)
 
 
 if __name__ == '__main__':
+    config.dictConfig(LOGGING)
+
+    CoreLoader().load()
+
     sched.start()

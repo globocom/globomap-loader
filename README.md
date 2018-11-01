@@ -4,12 +4,6 @@ Application responsible for reading connected applications events and apply them
 This application makes use of decoupled drivers for reading and transforming sources' information and make
 them available for updating the [Globo Map API](https://github.com/globocom/globomap-api).
 
-Drivers:
-
-[Network API driver](https://github.com/globocom/globomap-driver-napi)
-
-[Cloudstack driver](https://github.com/globocom/globomap-driver-acs)
-
 ## Starting Project:
 
 ` make dynamic_ports` <br>
@@ -53,18 +47,18 @@ All of the environment variables below must be set for the application to work p
 | GLOBOMAP_RMQ_EXCHANGE              | RabbitMQ updates exchange name                                             | globomap-updates-exchange           |
 | GLOBOMAP_RMQ_ERROR_EXCHANGE        | RabbitMQ error exchange name                                               | globomap-errors-exchange            |
 | GLOBOMAP_RMQ_BINDING_KEY           | RabbitMQ generic driver API binding key                                    | globomap.updates (default)          |
-| VARIABLES of globomap-auth-manager | [globomap-auth-manager](https://github.com/globocom/globomap-auth-manager) | --                                  |
-| VARIABLES of globomap-driver-napi  | [globomap-driver-napi](https://github.com/globocom/globomap-driver-napi)   | --                                  |
-| VARIABLES of globomap-driver-acs   | [globomap-driver-acs](https://github.com/globocom/globomap-driver-acs)     | --                                  |
+| RETRIES                            | Number of retries.                                                         | 3                                   |
+| FACTOR                             | Number of threads.                                                         | 1                                   |
+| QUERIES                            | Queries                                                                    | query_name_test                     |
+| ZBX_PASSIVE_MONITOR_LOADER         | Zabbix monitor                                                             | passive_abc_monitor_loader          |
+| ZBX_PASSIVE_MONITOR_SCHED_QUERIES  | Zabbix monitor                                                             | passive_abc_monitor_sched_queries   |
+| SENTRY_DSN                         | Destination Sentry server.                                                 | https://user:password@sentry.io/test|
 
 
 ### Environment variables configuration from external libs
 All of the environment variables below must be set for the application to work properly.
 
 [globomap-auth-manager](https://github.com/globocom/globomap-auth-manager)
-[globomap-driver-napi](https://github.com/globocom/globomap-driver-napi)
-[globomap-driver-acs](https://github.com/globocom/globomap-driver-acs)
-
 
 ## Licensing
 

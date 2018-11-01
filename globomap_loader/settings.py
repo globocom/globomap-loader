@@ -37,30 +37,13 @@ LOADER_UPDATE = 'globomap_loader_update'
 
 RETRIES = os.getenv('RETRIES', 10)
 
+FACTOR = os.getenv('RETRIES', 1)
+
 QUERIES = os.getenv('QUERIES', '')
 
 ZBX_PASSIVE_MONITOR_LOADER = os.getenv('ZBX_PASSIVE_MONITOR_LOADER')
-ZBX_PASSIVE_MONITOR_SCHEDULER = os.getenv('ZBX_PASSIVE_MONITOR_SCHEDULER')
 ZBX_PASSIVE_MONITOR_SCHED_QUERIES = os.getenv(
     'ZBX_PASSIVE_MONITOR_SCHED_QUERIES')
-
-DRIVERS = [
-    {'package': 'globomap_loader.driver.generic',
-        'class': 'GenericDriver', 'factor': int(os.getenv('FACTOR', 1))},
-    {'package': 'globomap_driver_napi.driver', 'class': 'Napi', 'factor': 1},
-    {
-        'package': 'globomap_driver_acs.driver', 'class': 'Cloudstack',
-        'params': {
-            'env': 'DEV'
-        }, 'factor': 1
-    },
-    {
-        'package': 'globomap_driver_acs.driver', 'class': 'Cloudstack',
-        'params': {
-            'env': 'CME'
-        }, 'factor': 1
-    }
-]
 
 SENTRY_DSN = os.getenv('SENTRY_DSN')
 

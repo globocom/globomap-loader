@@ -37,11 +37,11 @@ tests_ci: clean ## Make tests to CI
 
 run:  ## Run the loader
 	@echo "Running loader..."
-	@python3.6 run_loader.py $(module)
+	@PYTHONPATH=`pwd`:$PYTHONPATH python globomap_loader/run_loader.py
 
-run_reset_loader: ## Run the reset loader app
+run_scheduler_tasks: ## Run the reset loader app
 	@echo "Running reset loader..."
-	@python3.6 run_reset_loader.py
+	@PYTHONPATH=`pwd`:$PYTHONPATH python globomap_loader/scheduler_tasks.py
 
 containers_start:## Start containers
 	docker-compose up -d
