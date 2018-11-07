@@ -37,7 +37,7 @@ LOADER_UPDATE = 'globomap_loader_update'
 
 RETRIES = os.getenv('RETRIES', 10)
 
-FACTOR = os.getenv('FACTOR', 1)
+FACTOR = int(os.getenv('FACTOR', 1))
 
 QUERIES = os.getenv('QUERIES', '')
 
