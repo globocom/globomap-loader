@@ -26,7 +26,7 @@ from globomap_loader.settings import GLOBOMAP_RMQ_USER
 from globomap_loader.settings import GLOBOMAP_RMQ_VIRTUAL_HOST
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class GenericDriver(object):
@@ -55,4 +55,6 @@ class GenericDriver(object):
         try:
             self.rabbitmq.run()
         except Exception:
+            LOGGER.exception('Erro in process updates')
             self.rabbitmq.stop()
+            raise Exception('Erro in process updates')
