@@ -33,8 +33,6 @@ GLOBOMAP_RMQ_KEY = os.getenv('GLOBOMAP_RMQ_BINDING_KEY', 'globomap.updates')
 
 SCHEDULER_FREQUENCY_EXEC = os.getenv('SCHEDULER_FREQUENCY_EXEC')
 
-LOADER_UPDATE = 'globomap_loader_update'
-
 RETRIES = os.getenv('RETRIES', 10)
 
 FACTOR = int(os.getenv('FACTOR', 1))
