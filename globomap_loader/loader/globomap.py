@@ -60,11 +60,21 @@ class GloboMapClient(object):
                 return self.clear(type, collection, element)
 
         except exceptions.ValidationError as err:
-            LOGGER.error(
-                'Bad request in send element %s %s %s %s %s %s ',
-                action, type, collection, element, key, err.message
-            )
-            raise GloboMapException(err.message, err.status_code)
+            if '1200' in err.message['errors'] and retries < RETRIES:
+                LOGGER.warning(
+                    'Retry action %s %s %s %s %s',
+                    action, type, collection, element, key
+                )
+                retries += 1
+                time.sleep(2)
+                self.update_element_state(
+                    action, type, collection, element, key, retries)
+            else:
+                LOGGER.error(
+                    'Bad request in send element %s %s %s %s %s %s',
+                    action, type, collection, element, key, err.message
+                )
+                raise GloboMapException(err.message, err.status_code)
 
         except exceptions.Unauthorized as err:
             if retries < RETRIES:

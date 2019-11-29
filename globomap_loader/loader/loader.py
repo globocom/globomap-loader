@@ -81,6 +81,9 @@ class DriverWorker(Process):
                 time.sleep(DRIVER_FETCH_INTERVAL)
 
     def _process_update(self, update, **kwargs):
+        self._process_update_with_retry(update, kwargs)
+
+    def _process_update_with_retry(self, update, kwargs, retry=0):
         try:
             self.globomap_client.update_element_state(
                 update['action'],
@@ -90,6 +93,10 @@ class DriverWorker(Process):
                 update.get('key'),
             )
         except GloboMapException as err:
+            if err.status_code == 400 and retry < 1:
+                retry += 1
+                return self._process_update_with_retry(update, kwargs, retry)
+
             if type(err.message) == bytes:
                 error_msg = err.message.decode('utf-8')
             else:
@@ -159,7 +166,7 @@ class UpdateExceptionHandler(object):
                 json.dumps(update),
                 kwargs.get('headers')
             )
-            logger.error(kwargs)
+            logger.debug(kwargs)
         except ConnectionClosed:
             if retry:
                 logger.warning('RabbitMQ Connection closed, reconnecting')
