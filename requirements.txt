@@ -1,5 +1,5 @@
 APScheduler==3.5.1
-globomap-api-client==1.0.9
+globomap-api-client==1.0.14
 globomap-monitoring==0.0.3
 pika==0.11.2
 raven==6.6.0
